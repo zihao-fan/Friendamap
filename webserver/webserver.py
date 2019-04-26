@@ -21,7 +21,7 @@ def update_database(sql):
     db = MySQLdb.connect(
         host="localhost",
         user="root",
-        passwd="secret",
+        passwd="my-secret-pw",
         database="friend"
     )
     cursor = db.cursor()
@@ -48,12 +48,12 @@ def list_all_frind_liked(placeID):
 	placeID = None
 
 	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-		placeID = reqeust.form.get("placeID")
+		placeID = reqeust.form.get("place_id")
 	elif request.headers['Content-Type'] == 'application/json':
-		placeID = arguments.get("placeID")
+		placeID = arguments.get("place_id")
 
 	if placeID:
-		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
+		read_database("SELECT user_id FROM Likes WHERE place_id = '{}'".format(placeID))
 
 
 @app.route('/v1/visited', methods=["GET"])
@@ -61,12 +61,12 @@ def list_all_friend_visited():
 	placeID = None
 
 	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-		placeID = reqeust.form.get("placeID")
+		placeID = reqeust.form.get("place_id")
 	elif request.headers['Content-Type'] == 'application/json':
-		placeID = arguments.get("placeID")
+		placeID = arguments.get("place_id")
 
 	if placeID:
-		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
+		read_database("SELECT user_id FROM Likes WHERE place_id = '{}'".format(placeID))
 
 
 
@@ -81,11 +81,11 @@ def like_a_place():
 @app.route('/v1/visit', methods=["POST"])
 def visit_a_place():
 	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-		placeID = request.form.get("placeID")
-		userID = request.form.get("userID")
+		placeID = request.form.get("place_id")
+		userID = request.form.get("user_id")
 	elif request.headers['Content-Type'] == 'application/json':
 		arguments = request.get_json()
-		placeID = arguments.get("placeID")
-		userID = arguments.get("userID")
+		placeID = arguments.get("place_id")
+		userID = arguments.get("user_id")
 
 	sql_query = "SELECT "

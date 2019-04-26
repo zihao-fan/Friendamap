@@ -1,0 +1,3 @@
+# Friendamap
+
+## API Documentation

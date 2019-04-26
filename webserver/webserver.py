@@ -31,24 +31,42 @@ def update_database(sql):
 
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
-    arguments = request.get_json()
-    title = arguments.get("title")
-    is_completed = arguments.get("is_completed")
-
+if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+        latitude = request.form.get("latitude")
+        longitude = request.form.get("longitude")
+        place = request.form.get("place")
+    elif request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        latitude = arguments.get("latitude")
+        longitude = arguments.get("longitude")
+        place = arguments.get("place")
 
 
 
 @app.route('/v1/liked', methods=["GET"])
 def list_all_frind_liked(placeID):
+	placeID = None
 
-	read_database("	SELECT userID FROM Visits WHERE placeID = '{}'".format(placeID))
+	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+		placeID = reqeust.form.get("placeID")
+	elif request.headers['Content-Type'] == 'application/json':
+		placeID = arguments.get("placeID")
 
+	if placeID:
+		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
 
 
 @app.route('/v1/visited', methods=["GET"])
-def list_all_friend_visited(placeID):
+def list_all_friend_visited():
+	placeID = None
 
-	read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
+	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+		placeID = reqeust.form.get("placeID")
+	elif request.headers['Content-Type'] == 'application/json':
+		placeID = arguments.get("placeID")
+
+	if placeID:
+		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
 
 
 
@@ -71,23 +89,3 @@ def visit_a_place():
 		userID = arguments.get("userID")
 
 	sql_query = "SELECT "
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

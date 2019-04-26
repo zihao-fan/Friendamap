@@ -15,6 +15,7 @@ def find_nearby_favorite():
 
 @app.route('/v1/liked', methods=["GET"])
 def list_all_frind_liked():
+	
 
 
 
@@ -33,7 +34,7 @@ def list_all_friend_visited():
 
 @app.route('/v1/like', methods=["POST"])
 def like_a_place():
-
+	
 
 
 

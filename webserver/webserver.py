@@ -5,7 +5,6 @@ import MySQLdb
 
 app = Flask(__name__)
 
-
 def read_database(sql):
     db = MySQLdb.connect(
         host="localhost",
@@ -32,7 +31,9 @@ def update_database(sql):
 
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
-
+    arguments = request.get_json()
+    title = arguments.get("title")
+    is_completed = arguments.get("is_completed")
 
 
 

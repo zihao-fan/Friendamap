@@ -85,8 +85,6 @@ def like_a_place():
 
 
 
-
-
 @app.route('/v1/visit', methods=["POST"])
 def visit_a_place():
 	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':

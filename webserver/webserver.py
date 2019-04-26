@@ -65,7 +65,23 @@ def list_all_friend_visited():
 
 @app.route('/v1/like', methods=["POST"])
 def like_a_place():
-	
+	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+		placeID = request.form.get("placeID")
+		userID = request.form.get("userID")
+	elif request.headers['Content-Type'] == 'application/json':
+		arguments = request.get_json()
+		placeID = arguments.get("placeID")
+		userID = arguments.get("userID")
+
+	sql_query = "INSERT INTO Likes (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
+	update_database(sql_query)
+
+	return_code = 201
+    logging.info("PlaceID {} is liked by userID {}.".format(placeID, userID))
+    data = {"placeID": placeID, "userLiked": userID}
+    
+    resp = Response(json.dumps(data), status = return_code, mimetype='application/json')
+    return resp
 
 
 
@@ -81,4 +97,21 @@ def visit_a_place():
 		placeID = arguments.get("placeID")
 		userID = arguments.get("userID")
 
-	sql_query = "SELECT "
+	sql_query = "INSERT INTO Visits (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
+	update_database(sql_query)
+
+	return_code = 201
+    logging.info("PlaceID {} is visited by userID {}.".format(placeID, userID))
+    data = {"placeID": placeID, "userVisited": userID}
+    
+    resp = Response(json.dumps(data), status = return_code, mimetype='application/json')
+    return resp
+
+
+
+
+
+
+
+
+

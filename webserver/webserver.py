@@ -64,11 +64,11 @@ def like_a_place():
 def visit_a_place():
 	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
 		placeID = request.form.get("placeID")
-		useID = request.form.get("userID")
+		userID = request.form.get("userID")
 	elif request.headers['Content-Type'] == 'application/json':
 		arguments = request.get_json()
 		placeID = arguments.get("placeID")
-		useID = arguments.get("userID")
+		userID = arguments.get("userID")
 
 	sql_query = "SELECT "
 

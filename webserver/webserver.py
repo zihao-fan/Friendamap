@@ -6,6 +6,30 @@ import MySQLdb
 app = Flask(__name__)
 
 
+def read_database(sql):
+    db = MySQLdb.connect(
+        host="localhost",
+        user="root",
+        passwd="my-secret-pw",
+        database="friend"
+    )
+    cursor = db.cursor()
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
+def update_database(sql):
+    db = MySQLdb.connect(
+        host="localhost",
+        user="root",
+        passwd="secret",
+        database="friend"
+    )
+    cursor = db.cursor()
+    cursor.execute(sql)
+    db.commit()
+
+
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
 

@@ -39,15 +39,28 @@ def find_nearby_favorite():
 
 @app.route('/v1/liked', methods=["GET"])
 def list_all_frind_liked(placeID):
+	placeID = None
 
-	read_database("	SELECT userID FROM Visits WHERE placeID = '{}'".format(placeID))
+	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+		placeID = reqeust.form.get("placeID")
+	elif request.headers['Content-Type'] == 'application/json':
+		placeID = arguments.get("placeID")
 
+	if placeID:
+		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
 
 
 @app.route('/v1/visited', methods=["GET"])
-def list_all_friend_visited(placeID):
+def list_all_friend_visited():
+	placeID = None
 
-	read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
+	if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+		placeID = reqeust.form.get("placeID")
+	elif request.headers['Content-Type'] == 'application/json':
+		placeID = arguments.get("placeID")
+
+	if placeID:
+		read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
 
 
 
@@ -70,23 +83,3 @@ def visit_a_place():
 		userID = arguments.get("userID")
 
 	sql_query = "SELECT "
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

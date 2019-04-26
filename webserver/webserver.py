@@ -32,8 +32,7 @@ def update_database(sql):
 
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
-
-
+	
 
 
 

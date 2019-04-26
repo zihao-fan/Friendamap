@@ -38,20 +38,16 @@ def find_nearby_favorite():
 
 
 @app.route('/v1/liked', methods=["GET"])
-def list_all_frind_liked():
+def list_all_frind_liked(placeID):
 
-
-
-
-
+	read_database("	SELECT userID FROM Visits WHERE placeID = '{}'".format(placeID))
 
 
 
 @app.route('/v1/visited', methods=["GET"])
-def list_all_friend_visited():
+def list_all_friend_visited(placeID):
 
-
-
+	read_database("SELECT userID FROM Likes WHERE placeID = '{}'".format(placeID))
 
 
 

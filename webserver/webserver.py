@@ -3,6 +3,8 @@ import json
 import logging
 import mysql.connector
 
+import get_Closest
+
 app = Flask(__name__)
 db = mysql.connector.connect(
         host="127.0.0.1",

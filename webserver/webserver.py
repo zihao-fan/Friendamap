@@ -4,35 +4,25 @@ import logging
 import mysql.connector
 
 app = Flask(__name__)
-
-def read_database(sql):
-    db = mysql.connector.connect(
+db = mysql.connector.connect(
         host="127.0.0.1",
         user="root",
         passwd="my-secret-pw",
         database="friend",
         auth_plugin='mysql_native_password'
     )
+
+def read_database(sql):
+    global db     
     cursor = db.cursor()
     cursor.execute(sql)
     return cursor.fetchall()
 
-result = read_database('SELECT * FROM Users')
-print('type', type(result))
-print('result', result)
-
 def update_database(sql):
-    db = mysql.connector.connect(
-        host="127.0.0.1",
-        user="root",
-        passwd="my-secret-pw",
-        database="friend",
-        auth_plugin='mysql_native_password'
-    )
+    global db 
     cursor = db.cursor()
     cursor.execute(sql)
     db.commit()
-
 
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
@@ -90,31 +80,32 @@ def find_nearby_favorite():
 
 
 @app.route('/v1/liked', methods=["GET"])
-def list_all_frind_liked(placeID):
-    placeID = None
-
+def list_all_friend_liked():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
         placeID = reqeust.form.get("place_id")
     elif request.headers['Content-Type'] == 'application/json':
         placeID = arguments.get("place_id")
 
-    if placeID:
-        read_database("SELECT user_id FROM Likes WHERE place_id = '{}'".format(placeID))
+    return_data = read_database("SELECT U.first_name, U.last_name FROM Likes AS L INNER JOIN Users AS U ON L.user_id = U.id WHERE place_id = '{}'".format(placeID))
+    # return_data is a list of tuples (each tuple is a row)
+    return_data = [' '.join(list(item)) for item in return_data]
+    data = {"results": return_data}
+    resp = Response(json.dumps(data), status=200, mimetype='application/json')
+    return resp
 
 
 @app.route('/v1/visited', methods=["GET"])
 def list_all_friend_visited():
-    placeID = None
-
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
         placeID = reqeust.form.get("place_id")
     elif request.headers['Content-Type'] == 'application/json':
         placeID = arguments.get("place_id")
 
-    if placeID:
-        return_data = read_database("SELECT user_id FROM Likes WHERE place_id = '{}'".format(placeID))
-        print(return_data)
-
+    return_data = read_database("SELECT U.first_name, U.last_name FROM Visits AS V INNER JOIN Users AS U ON V.user_id = U.id WHERE place_id = '{}'".format(placeID))
+    return_data = [' '.join(list(item)) for item in return_data]
+    data = {"results": return_data}
+    resp = Response(json.dumps(data), status=200, mimetype='application/json')
+    return resp
 
 
 

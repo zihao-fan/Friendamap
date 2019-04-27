@@ -40,12 +40,53 @@ def find_nearby_favorite():
         latitude = request.form.get("latitude")
         longitude = request.form.get("longitude")
         place = request.form.get("place")
+        place_address = request.form.get("place_address")
+
     elif request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
         latitude = arguments.get("latitude")
         longitude = arguments.get("longitude")
         place = arguments.get("place")
+        place_address = arguments.get("place_address")
 
+
+    place_address = place_address.replace(" ", "+")
+    key = "tfl7CPD56XnakZ4CJ0S42MtaAZEaIA1G"
+    url = "https://www.mapquestapi.com/geocoding/v1/address?key={}&inFormat=kvp&outFormat=json&location={}&thumbMaps=false".format(key, place_address)
+    response = requests.get(url)
+    place_latitude = response["results"][0]["locations"][0]["displayLatLng"]["lat"]
+    place_longitude = response["results"][0]["locations"][0]["displayLatLng"]["lng"]
+
+
+    # Get user's favorite place
+    auth = ("api", "dGda5UmGwgtvW3LfCpcgla5WwqVfkeFBlx6TKczXJ3AvIRIs-6eCclrsUOi-xvp6VVOYu_V-rX1sje2yKIMcKX_PgpPdgf9y2VCgoYFosaMJ_laJd8ZT_IhdgY7DXHYx")
+    url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=1".format(place, place_latitude, place_longitude)
+    response = requests.get(url, auth=auth)
+
+    user_place_dict = {}
+    user_place_dict["rating"] = response["businesses"][0]["rating"]
+    user_place_dict["id"] = response["businesses"][0]["id"]
+    user_place_dict["name"] = response["businesses"][0]["name"]
+    user_place_dict["price"] = response["businesses"][0]["price"]
+    user_place_dict["categories"] = response["businesses"][0]["categories"]
+
+    # Get 5 similar places nearby
+    url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=5".format(place, latitude, longitude)
+    response = requests.get(url, auth=auth)
+
+    results_list = []
+    for business in response["businesses"]:
+        d = {}
+        d["rating"] = business["rating"]
+        d["id"] = business["id"]
+        d["name"] = business["name"]
+        d["price"] = business["price"]
+        d["categories"] = business["categories"][0]["title"]
+        results_list.append(d)
+
+    sorted_list = get_closest(results_list, user_place_dict)
+    data = {"results": sorted_list}
+    resp = Response(json.dumps(data), status=status_code, mimetype='application/json')
 
 
 @app.route('/v1/liked', methods=["GET"])

@@ -48,15 +48,18 @@ def find_nearby_favorite():
     place_address = place_address.replace(" ", "+")
     key = "tfl7CPD56XnakZ4CJ0S42MtaAZEaIA1G"
     url = "https://www.mapquestapi.com/geocoding/v1/address?key={}&inFormat=kvp&outFormat=json&location={}&thumbMaps=false".format(key, place_address)
-    response = requests.get(url)
+    response = requests.get(url).json()
     place_latitude = response["results"][0]["locations"][0]["displayLatLng"]["lat"]
     place_longitude = response["results"][0]["locations"][0]["displayLatLng"]["lng"]
 
 
     # Get user's favorite place
-    auth = ("api", "dGda5UmGwgtvW3LfCpcgla5WwqVfkeFBlx6TKczXJ3AvIRIs-6eCclrsUOi-xvp6VVOYu_V-rX1sje2yKIMcKX_PgpPdgf9y2VCgoYFosaMJ_laJd8ZT_IhdgY7DXHYx")
+    api_key = "dGda5UmGwgtvW3LfCpcgla5WwqVfkeFBlx6TKczXJ3AvIRIs-6eCclrsUOi-xvp6VVOYu_V-rX1sje2yKIMcKX_PgpPdgf9y2VCgoYFosaMJ_laJd8ZT_IhdgY7DXHYx"
+    headers = {
+            'Authorization': 'Bearer {}'.format(api_key),
+    }
     url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=1".format(place, place_latitude, place_longitude)
-    response = requests.get(url, auth=auth)
+    response = requests.get(url, headers=headers).json()
 
     user_place_dict = {}
     user_place_dict["rating"] = response["businesses"][0]["rating"]
@@ -67,7 +70,7 @@ def find_nearby_favorite():
 
     # Get 5 similar places nearby
     url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=5".format(place, latitude, longitude)
-    response = requests.get(url, auth=auth)
+    response = requests.get(url, auth=auth).json()
 
     results_list = []
     for business in response["businesses"]:

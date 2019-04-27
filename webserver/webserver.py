@@ -79,8 +79,9 @@ def find_nearby_favorite():
         d["categories"] = business["categories"][0]["title"]
         results_list.append(d)
 
-    sorted_list = get_closest(results_list, user_place_dict)
-    data = {"results": sorted_list}
+
+    #sorted_list = get_closest(results_list, user_place_dict)
+    #data = {"results": sorted_list}
     resp = Response(json.dumps(data), status=status_code, mimetype='application/json')
 
 

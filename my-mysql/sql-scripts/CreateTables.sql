@@ -7,12 +7,12 @@ CREATE TABLE Users (
 
 CREATE TABLE Likes (
     user_id INT NOT NULL,
-    place_id INT NOT NULL,
+    place_id varchar(50) NOT NULL,
     PRIMARY KEY (user_id, place_id)
 );
 
 CREATE TABLE Visits (
     user_id INT NOT NULL,
-    place_id INT NOT NULL,
+    place_id varchar(50) NOT NULL,
     PRIMARY KEY (user_id, place_id)
 );

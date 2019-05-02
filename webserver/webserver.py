@@ -7,7 +7,8 @@ import get_Closest
 
 app = Flask(__name__)
 db = mysql.connector.connect(
-        host="127.0.0.1",
+        # host="127.0.0.1",
+        host="my-mysql",
         user="root",
         passwd="my-secret-pw",
         database="friend",

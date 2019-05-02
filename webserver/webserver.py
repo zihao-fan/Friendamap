@@ -29,19 +29,35 @@ def update_database(sql):
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-        latitude = request.form.get("latitude")
-        longitude = request.form.get("longitude")
+        current_address = request.form.get("current_address")
+        #latitude = request.form.get("latitude")
+        #longitude = request.form.get("longitude")
+
+        # place: user's favotite place in hometown
         place = request.form.get("place")
+
+        # place_address: that place's address
         place_address = request.form.get("place_address")
 
     elif request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
-        latitude = arguments.get("latitude")
-        longitude = arguments.get("longitude")
+        current_address = arguments.get("current_address")
+        #latitude = arguments.get("latitude")
+        #longitude = arguments.get("longitude")
+
         place = arguments.get("place")
         place_address = arguments.get("place_address")
 
 
+    # convert user's current address into latitude and longitude
+    current_address = current_address.replace(" ", "+")
+    key = "tfl7CPD56XnakZ4CJ0S42MtaAZEaIA1G"
+    url = "https://www.mapquestapi.com/geocoding/v1/address?key={}&inFormat=kvp&outFormat=json&location={}&thumbMaps=false".format(key, current_address)
+    response = requests.get(url).json()
+    latitude = response["results"][0]["locations"][0]["displayLatLng"]["lat"]
+    longitude = response["results"][0]["locations"][0]["displayLatLng"]["lng"]
+
+    #  convert user's favorite place's address into latitude and longitude
     place_address = place_address.replace(" ", "+")
     key = "tfl7CPD56XnakZ4CJ0S42MtaAZEaIA1G"
     url = "https://www.mapquestapi.com/geocoding/v1/address?key={}&inFormat=kvp&outFormat=json&location={}&thumbMaps=false".format(key, place_address)
@@ -50,7 +66,7 @@ def find_nearby_favorite():
     place_longitude = response["results"][0]["locations"][0]["displayLatLng"]["lng"]
 
 
-    # Get user's favorite place
+    # Get user's favorite place in hometown
     api_key = "dGda5UmGwgtvW3LfCpcgla5WwqVfkeFBlx6TKczXJ3AvIRIs-6eCclrsUOi-xvp6VVOYu_V-rX1sje2yKIMcKX_PgpPdgf9y2VCgoYFosaMJ_laJd8ZT_IhdgY7DXHYx"
     headers = {
             'Authorization': 'Bearer {}'.format(api_key),

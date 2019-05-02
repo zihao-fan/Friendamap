@@ -67,7 +67,7 @@ def find_nearby_favorite():
 
     # Get 5 similar places nearby
     url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=5".format(place, latitude, longitude)
-    response = requests.get(url, auth=auth).json()
+    response = requests.get(url, headers=headers).json()
 
     results_list = []
     for business in response["businesses"]:

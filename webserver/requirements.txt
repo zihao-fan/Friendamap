@@ -2,3 +2,4 @@ pymysql==0.9.3
 requests==2.19.1
 Flask==1.0.2
 rq==1.0
+mysql-connector-python

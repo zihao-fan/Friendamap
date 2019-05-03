@@ -2,17 +2,18 @@ from flask import Flask, request, Response
 import json
 import logging
 import mysql.connector
-
+import pymysql
+import requests
 import get_Closest
 
 app = Flask(__name__)
-db = mysql.connector.connect(
-        # host="127.0.0.1",
-        host="my-mysql",
+db = pymysql.connect(
+        host="127.0.0.1",
+        # host="my-mysql",
         user="root",
         passwd="my-secret-pw",
         database="friend",
-        auth_plugin='mysql_native_password'
+        # auth_plugin='mysql_native_password'
     )
 
 def read_database(sql):
@@ -144,16 +145,17 @@ def like_a_place():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
         place_name = request.form.get("place_name")
         place_address = request.form.get("place_address")
-        userID = request.form.get("userID")
+        userID = request.form.get("user_id")
     elif request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
         place_name = arguments.get("place_name")
         place_address = arguments.get("place_address")
-        userID = arguments.get("userID")
+        userID = arguments.get("user_id")
 
     placeID = address_to_id_helper(place_name, place_address)
 
-    sql_query = "INSERT INTO Likes (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
+    sql_query = "INSERT INTO Likes (place_id, user_id) VALUES ('{}', {})".format(placeID, userID)
+    print('sql_query', sql_query)
     update_database(sql_query)
 
     return_code = 201
@@ -179,7 +181,7 @@ def visit_a_place():
 
     placeID = address_to_id_helper(place_name, place_address)
 
-    sql_query = "INSERT INTO Visits (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
+    sql_query = "INSERT INTO Visits (place_id, user_id) VALUES ('{}', {})".format(placeID, userID)
     update_database(sql_query)
 
     return_code = 201

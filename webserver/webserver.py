@@ -28,6 +28,19 @@ def update_database(sql):
     cursor.execute(sql)
     db.commit()
 
+def convert_to_str(item):
+    attr = ['address1', 'address2', 'address3', 'city', 'state', 'zip_code']
+    str_list = []
+    for x in attr:
+        if not item['location'][x]:
+            continue
+        else:
+            str_list.append(str(item['location'][x]).strip())
+    num = len(str_list)
+    temp = '{} ' * num
+    addr = temp.strip().format(*tuple(str_list))
+    return addr
+
 @app.route('/v1/places', methods=["GET"])
 def find_nearby_favorite():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
@@ -95,12 +108,19 @@ def find_nearby_favorite():
         d["name"] = business["name"]
         d["price"] = business["price"]
         d["categories"] = business["categories"][0]["title"]
+        # d["address"]  = str(business["location"]["address1"]) + " " + str(business["location"]["address2"]) \
+        #                 + str(business["location"]["address3"]) + str(business["location"]["city"]) + " "\
+        #                 + str(business["location"]["state"]) + " " + str(business["location"]["zip_code"])
+        d["address"] = convert_to_str(business)
         results_list.append(d)
 
-
+    print("results_list: ", results_list)
+    print("user_place_dict: ", user_place_dict)
     sorted_list = get_closest(results_list, user_place_dict)
     data = {"results": sorted_list}
     resp = Response(json.dumps(data), status=201, mimetype='application/json')
+
+    return resp
 
 def get_closest(list_of_nearby, favorite_place):
     """ score = 0 + no. pf duplicates in categories * 5 - price dollar sign digits difference * 2 - rating difference * 10 """
@@ -119,11 +139,13 @@ def get_closest(list_of_nearby, favorite_place):
         score = score - 10 * abs(float(item["rating"]) - ref_rating)
         item["score"] = score
 
-    for item in list_of_nearby:
-        return_list = []
-        return_list.append({"id": item["id"], "score": item["score"]})
+    return_list = []
 
-    return_list = sorted(return_list, key = lambda i: i["score"])
+    for item in list_of_nearby:
+        return_list.append({"name": item["name"], "address": item["address"],
+                            "id": item["id"], "score": item["score"]})
+
+    return_list = sorted(return_list, key = lambda i: i["score"], reverse = True)
     return return_list
 
 

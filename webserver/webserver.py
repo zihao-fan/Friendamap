@@ -104,9 +104,13 @@ def find_nearby_favorite():
 @app.route('/v1/liked', methods=["GET"])
 def list_all_friend_liked():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-        placeID = reqeust.form.get("place_id")
+        place_name = request.form.get("place_name")
+        place_address = request.form.get("place_address")
     elif request.headers['Content-Type'] == 'application/json':
-        placeID = arguments.get("place_id")
+        place_name = arguments.get("place_name")
+        place_address = arguments.get("place_address")
+
+    placeID = address_to_id_helper(place_name, place_address)
 
     return_data = read_database("SELECT U.first_name, U.last_name FROM Likes AS L INNER JOIN Users AS U ON L.user_id = U.id WHERE place_id = '{}'".format(placeID))
     # return_data is a list of tuples (each tuple is a row)
@@ -119,9 +123,13 @@ def list_all_friend_liked():
 @app.route('/v1/visited', methods=["GET"])
 def list_all_friend_visited():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-        placeID = reqeust.form.get("place_id")
+        place_name = request.form.get("place_name")
+        place_address = request.form.get("place_address")
     elif request.headers['Content-Type'] == 'application/json':
-        placeID = arguments.get("place_id")
+        place_name = arguments.get("place_name")
+        place_address = arguments.get("place_address")
+
+    placeID = address_to_id_helper(place_name, place_address)
 
     return_data = read_database("SELECT U.first_name, U.last_name FROM Visits AS V INNER JOIN Users AS U ON V.user_id = U.id WHERE place_id = '{}'".format(placeID))
     return_data = [' '.join(list(item)) for item in return_data]
@@ -134,12 +142,16 @@ def list_all_friend_visited():
 @app.route('/v1/like', methods=["POST"])
 def like_a_place():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-        placeID = request.form.get("placeID")
+        place_name = request.form.get("place_name")
+        place_address = request.form.get("place_address")
         userID = request.form.get("userID")
     elif request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
-        placeID = arguments.get("placeID")
+        place_name = arguments.get("place_name")
+        place_address = arguments.get("place_address")
         userID = arguments.get("userID")
+
+    placeID = address_to_id_helper(place_name, place_address)
 
     sql_query = "INSERT INTO Likes (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
     update_database(sql_query)
@@ -156,12 +168,16 @@ def like_a_place():
 @app.route('/v1/visit', methods=["POST"])
 def visit_a_place():
     if request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-        placeID = request.form.get("place_id")
+        place_name = request.form.get("place_name")
+        place_address = request.form.get("place_address")
         userID = request.form.get("user_id")
     elif request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
-        placeID = arguments.get("place_id")
+        place_name = arguments.get("place_name")
+        place_address = arguments.get("place_address")
         userID = arguments.get("user_id")
+
+    placeID = address_to_id_helper(place_name, place_address)
 
     sql_query = "INSERT INTO Visits (place_id, user_id) VALUES ({}, {})".format(placeID, userID)
     update_database(sql_query)
@@ -174,6 +190,22 @@ def visit_a_place():
     return resp
 
 
+def address_to_id_helper(place, place_address):
+    place_address = place_address.replace(" ", "+")
+    key = "tfl7CPD56XnakZ4CJ0S42MtaAZEaIA1G"
+    url = "https://www.mapquestapi.com/geocoding/v1/address?key={}&inFormat=kvp&outFormat=json&location={}&thumbMaps=false".format(key, place_address)
+    response = requests.get(url).json()
+    place_latitude = response["results"][0]["locations"][0]["displayLatLng"]["lat"]
+    place_longitude = response["results"][0]["locations"][0]["displayLatLng"]["lng"]
+
+    yelp_api_key = "dGda5UmGwgtvW3LfCpcgla5WwqVfkeFBlx6TKczXJ3AvIRIs-6eCclrsUOi-xvp6VVOYu_V-rX1sje2yKIMcKX_PgpPdgf9y2VCgoYFosaMJ_laJd8ZT_IhdgY7DXHYx"
+    headers = {
+            'Authorization': 'Bearer {}'.format(yelp_api_key),
+    }
+    yelp_url = "https://api.yelp.com/v3/businesses/search?term={}&latitude={}&longitude={}&limit=1".format(place, place_latitude, place_longitude)
+    response = requests.get(yelp_url, headers=headers).json()
+
+    return response["businesses"][0]["id"]
 
 
 

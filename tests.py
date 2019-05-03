@@ -5,6 +5,9 @@ import time
 
 class FlaskrTestCase(unittest.TestCase):
 
+    def __init__(self):
+        self.headers = {"Content-Type": "application/json"}
+
     @classmethod
     def setUpClass(cls):
         url = 'http://127.0.0.1:5000/v1/tasks/remove'
@@ -37,6 +40,18 @@ class FlaskrTestCase(unittest.TestCase):
         tasks = response.json()['tasks']
         assert response.status_code==200
     '''
+
+    def test_0_like(self):
+        url = 'http://127.0.0.1:5000/v1/like'
+        data = {"user_id": 1, "place_name": "funky elephant", "place_address": "ninth street"}
+        response = requests.post(url, headers=self.headers, json=data)
+        assert response.status_code == 201
+
+    def test_1_visit(self):
+        url = 'http://127.0.0.1:5000/v1/visit'
+        data = {"user_id": 1, "place_name": "funky elephant", "place_address": "ninth street"}
+        response = requests.post(url, headers=self.headers, json=data)
+        assert response.status_code == 201
 
 
     @classmethod

@@ -8,7 +8,7 @@ connect to MapQuest API to collect the longitude and latitude of the place provi
 search for nearby places using Yelp API, and return 5 places that is most similar to the place provided by user.
 
 - Users can find out who else using this app favors a place. To
-implement this feature, we stored the favorite places provided by each user. We implemented a POST request to store new favorite place for a user id, and a GET request to retrieve user ids that liked a place using the place name and address. 
+implement this feature, we stored the favorite places provided by each user in a MySQL database. We implemented a POST request to store new favorite place for a user id, and a GET request to retrieve user ids that liked a place using the place name and address. 
 
 - Users can get a list of users who have visited a place. To implement
 this feature, each user account is able to indicate whether the user has visited the place through a POST request. We store this information in MySQL database. A GET request with place name and address can retrieve the users who have visited a place with place name and address. 

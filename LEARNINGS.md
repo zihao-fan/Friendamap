@@ -3,7 +3,7 @@ A location based web application using Yelp API and MapQuest API. It encompasses
 - Users can search for a nearby place (eg. restaurant) that is similar to a specific place of
 their choosing. For example, if users are visiting a new city, they can provide the name
 of their favorite restaurant in their hometown and the app will suggest a similar
-restaurant in the city they are currently visiting. Users provide the name of a place, it's address, and their current address via a GET request. We then connect to MapQuest API to collect the longitude and latitude of the place provided by users and their current location, search for places nearby the current location using Yelp API, and return 5 places that are most similar to the place provided by user (sorted from most similar to least similar). 
+restaurant in the city they are currently visiting. Users provide the name of a place, it's address, and their current address via a GET request. We then connect to MapQuest API to collect the longitude and latitude of the place provided by users and their current location, search for similar places nearby the current location using Yelp API, calculate a similarity score for each result, and return 5 places sorted from most similar to least similar to the place provided by user. 
 
 - Users can find out who else using this app favors a place. To
 implement this feature, we stored the favorite places provided by each user in a MySQL database. We implemented a POST request to store new favorite place for a user id, and a GET request to retrieve user ids that liked a place using the place name and address. 
